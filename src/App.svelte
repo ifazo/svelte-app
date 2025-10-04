@@ -1,15 +1,12 @@
 <script>
-  import svelteLogo from "./assets/svelte.svg";
-  import viteLogo from "/vite.svg";
+  import Router from "svelte-spa-router";
+  import MainLayout from "./layouts/MainLayout.svelte";
+  import routes from "./routes.js";
 </script>
 
-<main>
-  <div>
-    <img src="{viteLogo}" alt="Vite logo" class="h-32 w-32" />
-    <h1 class="text-3xl font-bold underline">Hello world!</h1>
-    <img src="{svelteLogo}" alt="Svelte logo" class="h-32 w-32" />
-  </div>
-</main>
+<MainLayout>
+  <Router {routes} />
+</MainLayout>
 
 <style lang="postcss">
   @reference "tailwindcss";
