@@ -16,6 +16,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
     "firebase": "^12.3.0",
+    "lucide-svelte": "^0.544.0",
     "svelte-french-toast": "^1.2.0",
     "svelte-spa-router": "^4.0.1",
     "tailwindcss": "^4.1.14"
