@@ -13,13 +13,11 @@
   let isWishlisted = $state(false);
   let showComments = $state(false);
 
-  const API_BASE = "https://ifaz-svelte-server.vercel.app/api";
-
   async function fetchProduct() {
     loading = true;
     error = null;
     try {
-      const res = await fetch(`${API_BASE}/products/${id}`);
+      const res = await fetch(`${import.meta.env.VITE_API}/products/${id}`);
       product = await res.json();
       if (!product) throw new Error("Product not found");
     } catch (err) {
@@ -67,7 +65,14 @@
         <li><a href="/" class="hover:text-foreground transition-colors">Home</a></li>
         <li>/</li>
         {#if loading}
-          <li class="h-4 w-24 bg-muted animate-pulse rounded"></li>
+          <div class="flex justify-center items-center py-12">
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"
+        ></div>
+        <span class="ml-3 text-gray-600 dark:text-gray-300"
+          >Loading categories...</span
+        >
+      </div>
         {:else if product}
           <li><a href={`/category/${product.category}`} class="hover:text-foreground transition-colors capitalize">{product.category}</a></li>
           <li>/</li>

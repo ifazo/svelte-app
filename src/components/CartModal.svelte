@@ -44,7 +44,7 @@
                 <div class="ml-4 grid flex-auto grid-cols-1 grid-rows-1 items-start gap-x-5 gap-y-3 sm:ml-6 sm:flex sm:items-center sm:gap-0">
                   <div class="row-end-1 flex-auto sm:pr-6">
                     <h3 class="font-medium text-gray-900">
-                      <a href="#">Zip Tote Basket</a>
+                      <a href="/">Zip Tote Basket</a>
                     </h3>
                     <p class="mt-1 text-gray-500">White and black</p>
                   </div>
@@ -77,7 +77,7 @@
                 <div class="ml-4 grid flex-auto grid-cols-1 grid-rows-1 items-start gap-x-5 gap-y-3 sm:ml-6 sm:flex sm:items-center sm:gap-0">
                   <div class="row-end-1 flex-auto sm:pr-6">
                     <h3 class="font-medium text-gray-900">
-                      <a href="#">Throwback Hip Bag</a>
+                      <a href="/">Throwback Hip Bag</a>
                     </h3>
                     <p class="mt-1 text-gray-500">Salmon</p>
                   </div>

@@ -10,7 +10,7 @@ import Product from './pages/Product.svelte'
 const routes = {
   '/': Home,
   '/categories': Categories,
-  '/category/:slug': Category,
+  '/categories/:slug': Category,
   '/products': Products,
   '/products/:id': Product,
   '/login': Login,
