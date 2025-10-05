@@ -5,7 +5,7 @@
 
 <div class="min-h-screen flex flex-col">
   <Header />
-  <main class="flex-1 container mx-auto">
+  <main>
     <slot />
   </main>
   <Footer />

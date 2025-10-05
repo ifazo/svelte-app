@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { link } from "svelte-spa-router";
+  import toast from "svelte-french-toast";
   import {
     signIn,
     signInWithGoogle,
@@ -28,10 +29,11 @@
       user = cred.user ?? (await getCurrentUser());
       addUser(user);
       info = "Signed in successfully";
-      // navigate to home (works with hash routing)
+      toast.success(info);
       window.location.hash = "#/";
     } catch (err) {
       error = err?.message || "Failed to sign in";
+      toast.error(error);
     } finally {
       loading = false;
     }
@@ -45,9 +47,12 @@
       await signInWithGoogle();
       user = await getCurrentUser();
       addUser(user);
+      info = "Signed in with Google.";
+      toast.success(info);
       window.location.hash = "#/";
     } catch (err) {
       error = err?.message || "Google sign in failed";
+      toast.error(error);
     } finally {
       loading = false;
     }
@@ -61,9 +66,12 @@
       await signInWithGithub();
       user = await getCurrentUser();
       addUser(user);
+      info = "Signed in with GitHub.";
+      toast.success(info);
       window.location.hash = "#/";
     } catch (err) {
       error = err?.message || "GitHub sign in failed";
+      toast.error(error);
     } finally {
       loading = false;
     }
@@ -94,10 +102,12 @@
     try {
       await signOut();
       user = null;
-      removeUser(); 
+      removeUser();
       info = "Signed out";
+      toast.success(info);
     } catch (err) {
       error = err?.message || "Failed to sign out";
+      toast.error(error);
     } finally {
       loading = false;
     }
@@ -105,7 +115,7 @@
 
   onMount(async () => {
     user = await getCurrentUser();
-    if (user) addUser(user); 
+    if (user) addUser(user);
   });
 </script>
 

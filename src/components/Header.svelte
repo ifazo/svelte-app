@@ -1,8 +1,10 @@
 <script>
   import logo from "../assets/svelte.svg";
   import { link, location } from "svelte-spa-router";
+  import toast from "svelte-french-toast";
   import CartModal from "./CartModal.svelte";
   import { store, removeUser } from "../stores/index.js";
+  import { signOut } from "../../firebase.config";
 
   let showCart = false;
   const toggleCart = () => (showCart = !showCart);
@@ -14,7 +16,9 @@
   }
 
   function handleLogout() {
+    signOut();
     removeUser();
+    toast.success("Logged out successfully");
   }
 </script>
 

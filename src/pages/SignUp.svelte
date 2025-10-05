@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { link } from "svelte-spa-router";
+  import toast from "svelte-french-toast";
   import {
     signUp,
     signInWithGoogle,
@@ -30,10 +31,11 @@
       user = cred.user ?? (await getCurrentUser());
       addUser(user);
       info = "Account created successfully.";
-      // navigate to home (works with hash routing)
+      toast.success(info);
       window.location.hash = "#/";
     } catch (err) {
       error = err?.message || "Failed to create account";
+      toast.error(error);
       console.error("Sign up error:", err);
     } finally {
       loading = false;
@@ -49,9 +51,11 @@
       user = await getCurrentUser();
       addUser(user);
       info = "Signed in with Google.";
+      toast.success(info);
       window.location.hash = "#/";
     } catch (err) {
       error = err?.message || "Google sign in failed";
+      toast.error(error);
       console.error(err);
     } finally {
       loading = false;
@@ -67,9 +71,11 @@
       user = await getCurrentUser();
       addUser(user);
       info = "Signed in with GitHub.";
+      toast.success(info);
       window.location.hash = "#/";
     } catch (err) {
       error = err?.message || "GitHub sign in failed";
+      toast.error(error);
       console.error(err);
     } finally {
       loading = false;
