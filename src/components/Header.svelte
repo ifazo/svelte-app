@@ -2,10 +2,20 @@
   import logo from "../assets/svelte.svg";
   import { link, location } from "svelte-spa-router";
   import CartModal from "./CartModal.svelte";
+  import { store, removeUser } from "../stores/index.js";
 
   let showCart = false;
-
   const toggleCart = () => (showCart = !showCart);
+
+  let user;
+  $: {
+    $store;
+    user = $store.user;
+  }
+
+  function handleLogout() {
+    removeUser();
+  }
 </script>
 
 <header
@@ -63,14 +73,24 @@
 
     <!-- Right: Auth / Cart -->
     <div class="flex flex-1 items-center justify-end gap-x-2 md:gap-x-4">
-      <a
-        href="/login"
-        use:link
-        class:text-indigo-600={$location.startsWith("/login")}
-        class="text-xs md:text-sm font-semibold text-gray-900 hover:text-indigo-500 transition-colors"
-      >
-        Log in
-      </a>
+      {#if user}
+        <button
+          on:click={handleLogout}
+          class="text-xs md:text-sm font-semibold text-gray-900 hover:text-red-500 transition-colors"
+        >
+          Log out
+        </button>
+      {:else}
+        <a
+          href="/login"
+          use:link
+          class:text-indigo-600={$location.startsWith("/login")}
+          class="text-xs md:text-sm font-semibold text-gray-900 hover:text-indigo-500 transition-colors"
+        >
+          Log in
+        </a>
+      {/if}
+
       <button
         on:click={toggleCart}
         class="rounded-md bg-indigo-600 px-2.5 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -81,7 +101,6 @@
   </nav>
 </header>
 
-<!-- Modal shown when "Cart" is clicked -->
 {#if showCart}
   <CartModal on:close={() => (showCart = false)} />
 {/if}

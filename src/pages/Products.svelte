@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { addProductById } from "../stores/index.js";
 
   let products = [];
   let loading = true;
@@ -20,6 +21,10 @@
     } finally {
       loading = false;
     }
+  }
+
+  function handleAddToCart(product) {
+    addProductById(product._id, 1);
   }
 
   onMount(() => {
@@ -80,9 +85,12 @@
             {#if product.price}
               <div class="font-semibold text-indigo-600">${product.price}</div>
             {/if}
-            {#if product._id}
-              <div class="text-xs text-gray-400">ID: {product._id}</div>
-            {/if}
+            <button
+            on:click={() => handleAddToCart(product)}
+            class="mt-auto w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-500 transition"
+          >
+            Add to Cart
+          </button>
           </div>
         </div>
       {/each}

@@ -7,6 +7,7 @@
     signInWithGithub,
     getCurrentUser,
   } from "../../firebase.config.js";
+  import { addUser } from "../stores/index.js";
 
   let email = "";
   let password = "";
@@ -27,6 +28,7 @@
     try {
       const cred = await signUp(email, password);
       user = cred.user ?? (await getCurrentUser());
+      addUser(user);
       info = "Account created successfully.";
       // navigate to home (works with hash routing)
       window.location.hash = "#/";
@@ -45,6 +47,7 @@
     try {
       await signInWithGoogle();
       user = await getCurrentUser();
+      addUser(user);
       info = "Signed in with Google.";
       window.location.hash = "#/";
     } catch (err) {
@@ -62,6 +65,7 @@
     try {
       await signInWithGithub();
       user = await getCurrentUser();
+      addUser(user);
       info = "Signed in with GitHub.";
       window.location.hash = "#/";
     } catch (err) {
@@ -74,6 +78,7 @@
 
   onMount(async () => {
     user = await getCurrentUser();
+    addUser(user);
   });
 </script>
 

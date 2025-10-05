@@ -9,6 +9,7 @@
     getCurrentUser,
     signOut,
   } from "../../firebase.config.js";
+  import { addUser, removeUser } from "../stores/index.js";
 
   let email = "";
   let password = "";
@@ -25,6 +26,7 @@
     try {
       const cred = await signIn(email, password);
       user = cred.user ?? (await getCurrentUser());
+      addUser(user);
       info = "Signed in successfully";
       // navigate to home (works with hash routing)
       window.location.hash = "#/";
@@ -42,6 +44,7 @@
     try {
       await signInWithGoogle();
       user = await getCurrentUser();
+      addUser(user);
       window.location.hash = "#/";
     } catch (err) {
       error = err?.message || "Google sign in failed";
@@ -57,6 +60,7 @@
     try {
       await signInWithGithub();
       user = await getCurrentUser();
+      addUser(user);
       window.location.hash = "#/";
     } catch (err) {
       error = err?.message || "GitHub sign in failed";
@@ -90,6 +94,7 @@
     try {
       await signOut();
       user = null;
+      removeUser(); 
       info = "Signed out";
     } catch (err) {
       error = err?.message || "Failed to sign out";
@@ -100,6 +105,7 @@
 
   onMount(async () => {
     user = await getCurrentUser();
+    if (user) addUser(user); 
   });
 </script>
 
