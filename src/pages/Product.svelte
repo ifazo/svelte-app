@@ -57,7 +57,7 @@
   });
 </script>
 
-<div class="min-h-screen bg-background text-foreground">
+<div class="bg-white min-h-screen">
    <!-- Breadcrumb  -->
   <nav class="border-b border-border">
     <div class="container mx-auto px-4 py-4">
