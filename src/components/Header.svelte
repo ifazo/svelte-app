@@ -1,6 +1,11 @@
 <script>
   import logo from "../assets/svelte.svg";
-  import { link } from "svelte-spa-router";
+  import { link, location } from "svelte-spa-router";
+  import CartModal from "./CartModal.svelte";
+
+  let showCart = false;
+
+  const toggleCart = () => (showCart = !showCart);
 </script>
 
 <header
@@ -10,6 +15,7 @@
     class="mx-auto flex max-w-7xl items-center justify-between p-2 md:p-3 lg:px-4"
     aria-label="Global"
   >
+    <!-- Left: Logo -->
     <div class="flex flex-1 justify-start">
       <a href="/" use:link class="-m-1.5 p-1.5">
         <span class="sr-only">Logo</span>
@@ -17,25 +23,56 @@
       </a>
     </div>
 
+    <!-- Center: Navigation links -->
     <div
-      class="flex flex-1 justify-center gap-x-4 md:gap-x-8 lg:gap-x-12 text-xs md:text-sm font-semibold text-gray-900"
+      class="flex flex-1 justify-center gap-x-4 md:gap-x-8 lg:gap-x-12 text-xs md:text-sm font-semibold"
     >
-      <a href="/" use:link class="hover:text-indigo-600">Home</a>
-      <a href="/categories" use:link class="hover:text-indigo-600">Categories</a
+      <a
+        href="/"
+        use:link
+        class:text-indigo-600={$location === "/"}
+        class="text-gray-900 hover:text-indigo-500 transition-colors"
       >
-      <a href="/products" use:link class="hover:text-indigo-600">Products</a>
-      <a href="/dashboard" use:link class="hover:text-indigo-600">Dashboard</a>
+        Home
+      </a>
+      <a
+        href="/categories"
+        use:link
+        class:text-indigo-600={$location.startsWith("/categories")}
+        class="text-gray-900 hover:text-indigo-500 transition-colors"
+      >
+        Categories
+      </a>
+      <a
+        href="/products"
+        use:link
+        class:text-indigo-600={$location.startsWith("/products")}
+        class="text-gray-900 hover:text-indigo-500 transition-colors"
+      >
+        Products
+      </a>
+      <a
+        href="/dashboard"
+        use:link
+        class:text-indigo-600={$location.startsWith("/dashboard")}
+        class="text-gray-900 hover:text-indigo-500 transition-colors"
+      >
+        Dashboard
+      </a>
     </div>
 
+    <!-- Right: Auth / Cart -->
     <div class="flex flex-1 items-center justify-end gap-x-2 md:gap-x-4">
       <a
         href="/login"
         use:link
-        class="text-xs md:text-sm font-semibold text-gray-900 hover:text-indigo-600"
+        class:text-indigo-600={$location.startsWith("/login")}
+        class="text-xs md:text-sm font-semibold text-gray-900 hover:text-indigo-500 transition-colors"
       >
         Log in
       </a>
       <button
+        on:click={toggleCart}
         class="rounded-md bg-indigo-600 px-2.5 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
         Cart
@@ -43,3 +80,8 @@
     </div>
   </nav>
 </header>
+
+<!-- Modal shown when "Cart" is clicked -->
+{#if showCart}
+  <CartModal on:close={() => (showCart = false)} />
+{/if}

@@ -2,12 +2,10 @@
   import { onMount } from "svelte";
   import { link } from "svelte-spa-router";
   import {
-    signIn,
+    signUp,
     signInWithGoogle,
     signInWithGithub,
-    resetPassword,
     getCurrentUser,
-    signOut,
   } from "../../firebase.config.js";
 
   let email = "";
@@ -21,15 +19,20 @@
     e.preventDefault();
     error = "";
     info = "";
+    if (!email || !password) {
+      error = "Email and password are required.";
+      return;
+    }
     loading = true;
     try {
-      const cred = await signIn(email, password);
+      const cred = await signUp(email, password);
       user = cred.user ?? (await getCurrentUser());
-      info = "Signed in successfully";
+      info = "Account created successfully.";
       // navigate to home (works with hash routing)
       window.location.hash = "#/";
     } catch (err) {
-      error = err?.message || "Failed to sign in";
+      error = err?.message || "Failed to create account";
+      console.error("Sign up error:", err);
     } finally {
       loading = false;
     }
@@ -42,9 +45,11 @@
     try {
       await signInWithGoogle();
       user = await getCurrentUser();
+      info = "Signed in with Google.";
       window.location.hash = "#/";
     } catch (err) {
       error = err?.message || "Google sign in failed";
+      console.error(err);
     } finally {
       loading = false;
     }
@@ -57,42 +62,11 @@
     try {
       await signInWithGithub();
       user = await getCurrentUser();
+      info = "Signed in with GitHub.";
       window.location.hash = "#/";
     } catch (err) {
       error = err?.message || "GitHub sign in failed";
-    } finally {
-      loading = false;
-    }
-  }
-
-  async function handleResetPassword() {
-    if (!email) {
-      error = "Enter your email to reset password";
-      return;
-    }
-    error = "";
-    info = "";
-    loading = true;
-    try {
-      await resetPassword(email);
-      info = "Password reset email sent. Check your inbox.";
-    } catch (err) {
-      error = err?.message || "Failed to send reset email";
-    } finally {
-      loading = false;
-    }
-  }
-
-  async function handleSignOut() {
-    loading = true;
-    error = "";
-    info = "";
-    try {
-      await signOut();
-      user = null;
-      info = "Signed out";
-    } catch (err) {
-      error = err?.message || "Failed to sign out";
+      console.error(err);
     } finally {
       loading = false;
     }
@@ -103,14 +77,6 @@
   });
 </script>
 
-<!--
-  This example requires updating your template:
-
-  ```
-  <html class="h-full bg-gray-50">
-  <body class="h-full">
-  ```
--->
 <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
   <div class="sm:mx-auto sm:w-full sm:max-w-md">
     <h2
@@ -119,7 +85,7 @@
       {#if user}
         Welcome, {user.email}
       {:else}
-        Sign in to your account
+        Create new account
       {/if}
     </h2>
   </div>
@@ -152,11 +118,6 @@
               class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500"
               >Go to Home</a
             >
-            <button
-              on:click={handleSignOut}
-              class="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-sm font-semibold"
-              >Sign out</button
-            >
           </div>
         </div>
       {:else}
@@ -168,9 +129,8 @@
             <div class="mt-2">
               <input
                 bind:value={email}
-                type="email"
-                name="email"
                 id="email"
+                type="email"
                 autocomplete="email"
                 required
                 class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -186,10 +146,9 @@
             <div class="mt-2">
               <input
                 bind:value={password}
-                type="password"
-                name="password"
                 id="password"
-                autocomplete="current-password"
+                type="password"
+                autocomplete="new-password"
                 required
                 class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
               />
@@ -201,24 +160,23 @@
               <div class="flex h-6 shrink-0 items-center">
                 <div class="group grid size-4 grid-cols-1">
                   <input
-                    id="remember-me"
-                    name="remember-me"
+                    id="agree-to"
+                    name="agree-to"
                     type="checkbox"
-                    class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600"
                   />
                 </div>
               </div>
-              <label for="remember-me" class="block text-sm/6 text-gray-900"
-                >Remember me</label
+              <label for="agree-to" class="block text-sm/6 text-gray-900"
+                >Agree to</label
               >
             </div>
 
             <div class="text-sm/6">
-              <button
-                type="button"
-                on:click={handleResetPassword}
+              <a
+                href="/terms-conditions"
                 class="font-semibold text-indigo-600 hover:text-indigo-500"
-                >Forgot password?</button
+                >Terms and Conditions</a
               >
             </div>
           </div>
@@ -229,7 +187,7 @@
               class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               disabled={loading}
             >
-              {#if loading}Processing...{:else}Sign in{/if}
+              {#if loading}Processing...{:else}Create account{/if}
             </button>
           </div>
         </form>
@@ -292,12 +250,12 @@
         </div>
 
         <p class="mt-10 text-center text-sm/6 text-gray-500">
-          Don't have an account?
+          Already have an account?
           <a
-            href="/sign-up"
+            href="/login"
             use:link
             class="font-semibold text-indigo-600 hover:text-indigo-500"
-            >Create new account</a
+            >Sign in</a
           >
         </p>
       {/if}
