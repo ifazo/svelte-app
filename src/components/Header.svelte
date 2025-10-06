@@ -5,11 +5,19 @@
   import CartModal from "./CartModal.svelte";
   import { store, removeUser } from "../stores/index.js";
   import { signOut } from "../../firebase.config";
-
-  // Lucide icons
   import { Home, Layers, ShoppingBag, LayoutDashboard, LogOut, LogIn, ShoppingCart } from "lucide-svelte";
 
+  
   let showCart = false;
+
+  function openCart() {
+    showCart = true;
+  }
+
+  function closeModal() {
+    showCart = false;
+  }
+  
   const toggleCart = () => (showCart = !showCart);
 
   let user;
@@ -123,5 +131,5 @@
 </header>
 
 {#if showCart}
-  <CartModal on:close={() => (showCart = false)} />
+  <CartModal on:click={openCart} on:close={closeModal} />
 {/if}

@@ -11,7 +11,7 @@
       loading = true;
       const res = await fetch(`${import.meta.env.VITE_API}/products/random`);
       const data = await res.json();
-      console.log("Fetched products:", data);
+
       products = data || [];
       error = null;
     } catch (err) {

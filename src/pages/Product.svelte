@@ -1,17 +1,26 @@
 <script>
   import { onMount } from "svelte";
-  import { addProductById } from "../stores/index.js";
+  import { addProduct, store } from "../stores/index.js";
+  import toast from "svelte-french-toast";
+  import { loadStripe } from "@stripe/stripe-js";
+
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
   let { params } = $props();
   const id = params.id;
 
+  let user = null;
+  let product = $state(null);
   let loading = $state(true);
   let error = $state(null);
-  let product = $state(null);
   let selectedImage = $state(0);
   let quantity = $state(1);
   let isWishlisted = $state(false);
   let showComments = $state(false);
+  
+  $effect(() => {
+    user = $store.user || null;
+  });
 
   async function fetchProduct() {
     loading = true;
@@ -28,18 +37,60 @@
     }
   }
 
-  function handleAddToCart() {
+  async function handleAddToCart() {
     if (product) {
-      addProductById(product._id || product.id, quantity);
+      addProduct(product, quantity);
+      toast.success("Product added to cart");
       console.log("[v0] Added to cart:", product.title, "Quantity:", quantity);
     }
   }
 
-  function handleBuyNow() {
-    if (product) {
-      addProductById(product._id || product.id, quantity);
-      console.log("[v0] Buy now clicked:", product.title);
-      // Navigate to checkout
+  async function handlePayment() {
+    if (!user) {
+      toast.error("Please log in to proceed with payment.");
+      return;
+    }
+
+    if (!product) {
+      toast.error("No product found.");
+      return;
+    }
+
+    loading = true;
+    toast.loading("Redirecting to payment...");
+    try {
+      const stripe = await stripePromise;
+      if (!stripe) {
+        toast.error("Stripe failed to load.");
+        return;
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_API}/payment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          products: [{ ...product, quantity }],
+          name: user.displayName || "",
+          email: user.email,
+        }),
+      });
+
+      const session = await response.json();
+
+      // @ts-ignore
+      const result = await stripe.redirectToCheckout({ sessionId: session.id });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("Payment failed: " + error.message);
+    } finally {
+      loading = false;
+      toast.dismiss();
     }
   }
 
@@ -225,7 +276,7 @@
               Add to Cart
             </button>
             <button
-              onclick={handleBuyNow}
+              onclick={handlePayment}
               class="flex-1 bg-accent text-accent-foreground px-8 py-4 rounded-lg font-medium hover:bg-accent/90 transition-colors"
             >
               Buy Now
